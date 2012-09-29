@@ -1,7 +1,7 @@
 NamedRegExp
 ===========
 
-This is a very simple and tiny JavaScript library to add [named capturing groups](http://www.regular-expressions.info/named.html)
+This is a very simple and tiny JavaScript library to add support for [named capturing groups](http://www.regular-expressions.info/named.html)
 to JavaScript's RegExp object.  It does this by exposing a new class called `NamedRegExp` that 
 inherits functionality from the native RegExp object and adds additional functionality.
 
@@ -12,7 +12,7 @@ Usage
 
 ```javascript
 var regexp = new NamedRegExp('Hello (?P<name>\\w+) from (?P<year>20[1-9][0-9])');
-var results = regexp.exec('Hello Daniel');
+var results = regexp.exec('Hello Daniel from 2012');
 alert(results.name) // "Daniel"
 alert(results.year) // "2012"
 ```
