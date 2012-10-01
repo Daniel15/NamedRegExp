@@ -18,9 +18,8 @@ alert(results.name) // "Daniel"
 alert(results.year) // "2012"
 
 // Replacing
-var regexp = new NamedRegExp('^(?P<year>20[1-9][0-9]) is (?P<msg>.+)$');
-var result = '2012 is awesome'.replace(regexp, 'It\'s \\k<msg> in \\k<year>!');
-alert(result); // "It's awesome in 2012!"
+var result = 'Hello Daniel from 2012'.replace(regexp, '\\k<year> is year of the \\k<name>!');
+alert(result); // "2012 is year of the Daniel!"
 ```
 
 Licence
