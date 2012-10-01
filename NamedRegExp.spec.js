@@ -35,6 +35,16 @@ describe('NamedRegExp', function () {
 			expect(result).toBe(expected);
 		});
 		
+		it('should function as a String method', function () {
+			var regexp = new NamedRegExp('^(?P<helloworld>\\d+)$');
+			var input = '12345';
+			var replacement = 'aaa \\k<helloworld> bbb';
+			var expected = 'aaa 12345 bbb';
+			
+			var result = input.replace(regexp, replacement);
+			expect(result).toBe(expected);
+		});
+		
 		it('should support replacing two groups', function () {
 			var regexp = new NamedRegExp('^(?P<year>\\d+) is (?P<msg>.+)$');
 			var input = '2012 is awesome';

@@ -73,13 +73,29 @@
 	NamedRegExp.replace = function replace(string, pattern, replacement) {
 		if (typeof(replacement) !== 'function') {
 			// Switch the named backreferences with their index
-			var replacement = replacement.replace(backref, function (match, name) {
+			
+			var replacement = nativeReplace.call(replacement, backref, function (match, name) {
 				return '$' + pattern.namedGroupIndices[name];
 			});
 		}
 	
-		return string.replace(pattern, replacement);
+		return nativeReplace.call(string, pattern, replacement);
 	}
+	
+	/**
+	 * Override native String#replace method.
+	 * Returns a new string with some or all matches of a `pattern`` replaced by a `replacement`. 
+	 * @param   {RegExp|String}    pattern      Pattern to replace
+	 * @param   {String|Function}  replacement  What to replace `pattern` with
+	 * @return  {String}           A new string with all the patterns replaced
+	 */
+	nativeString.replace = function (pattern, replacement) {
+		// If we've got a NamedRegExp, use the replacement .replace function
+		if (pattern.isNamed)
+			return NamedRegExp.replace(this, pattern, replacement);
+		else
+			return nativeReplace.call(this, pattern, replacement);
+	};
 	
 	return NamedRegExp;
 })();
