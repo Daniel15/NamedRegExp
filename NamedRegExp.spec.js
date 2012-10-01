@@ -23,4 +23,26 @@ describe('NamedRegExp', function () {
 		expect(result.name).toBe('Daniel');
 		expect(result.year).toBe('2012');
 	});
+	
+	describe('replace', function () {
+		it('should function as a static method', function () {
+			var regexp = new NamedRegExp('^(?P<helloworld>\\d+)$');
+			var input = '12345';
+			var replacement = 'aaa \\k<helloworld> bbb';
+			var expected = 'aaa 12345 bbb';
+			
+			var result = NamedRegExp.replace(input, regexp, replacement);
+			expect(result).toBe(expected);
+		});
+		
+		it('should support replacing two groups', function () {
+			var regexp = new NamedRegExp('^(?P<year>\\d+) is (?P<msg>.+)$');
+			var input = '2012 is awesome';
+			var replacement = 'It\'s \\k<msg> in \\k<year>!';
+			var expected = 'It\'s awesome in 2012!';
+			
+			var result = NamedRegExp.replace(input, regexp, replacement);
+			expect(result).toBe(expected);
+		});
+	})
 });

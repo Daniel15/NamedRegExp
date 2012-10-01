@@ -8,14 +8,20 @@
 	
 	var 
 		// Native RegExp object prototype
-		nativeProto = RegExp.prototype,
+		nativeRegex = RegExp.prototype,
+		nativeExec = nativeRegex.exec,
+		
+		nativeString = String.prototype,
+		nativeReplace = nativeString.replace,
 		// Named group - Matches (?P<name>....)
-		group = /\(\?P<([^>]+)>/g;
+		group = /\(\?P<([^>]+)>/g,
+		// Backreference - Matches \k<name>
+		backref = /\\k<([^>]+)>/g;
 	
 	// Exec function that takes named groups into account
 	var exec = function (string) {
 		// Perform native regex match
-		var result = nativeProto.exec.call(this, string);
+		var result = nativeExec.call(this, string);
 		
 		// Ensure result isn't null
 		if (!result)
@@ -30,12 +36,14 @@
 	};
 	
 	// Constructor for NamedRegExp
-	return function (pattern, flags) {	
-		var groups = [];
+	var NamedRegExp = function NamedRegExp (pattern, flags) {	
+		var groups = [],
+			groupIndices = {};
 		
 		// Go through all named groups
 		var newPattern = pattern.replace(group, function (match, name, offset, string) {
-			groups.push(name);
+			// Array#push returns the array length, which is the same as the regex replacement index.
+			groupIndices[name] = groups.push(name);
 			return '(';
 		});
 		
@@ -46,6 +54,7 @@
 		// Properties
 		regexp.isNamed = true;
 		regexp.namedGroups = groups;
+		regexp.namedGroupIndices = groupIndices;
 		regexp.originalSource = pattern;
 		
 		// Methods
@@ -53,4 +62,24 @@
 		
 		return regexp;
 	}
+
+	/**
+	 * Returns a new string with some or all matches of a `pattern`` replaced by a `replacement`. 
+	 * @param   {String}           string       Input string to search for replacements in
+	 * @param   {RegExp|String}    pattern      Pattern to replace
+	 * @param   {String|Function}  replacement  What to replace `pattern` with
+	 * @return  {String}           A new string with all the patterns replaced
+	 */
+	NamedRegExp.replace = function replace(string, pattern, replacement) {
+		if (typeof(replacement) !== 'function') {
+			// Switch the named backreferences with their index
+			var replacement = replacement.replace(backref, function (match, name) {
+				return '$' + pattern.namedGroupIndices[name];
+			});
+		}
+	
+		return string.replace(pattern, replacement);
+	}
+	
+	return NamedRegExp;
 })();
